@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>index</title>
+</head>
+<body>
+<form action="/file/upload" method="post" enctype="multipart/form-data">
+    <label>上传文件:</label>
+    <input type="file" name="files" multiple="multiple">
+    <label>
+        <select name="type">
+            <option value="blog">blog</option>
+            <option value="personal">personal</option>
+            <option value="test">test</option>
+        </select>
+    </label>
+    <label>相对路劲:</label>
+    <label>
+        <input type="text" name="relativePath" value="/relativePath">
+    </label>
+    <input type="submit" value="提交">
+</form>
+</body>
+</html>
