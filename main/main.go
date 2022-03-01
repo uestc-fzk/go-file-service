@@ -4,8 +4,9 @@ import (
 	"GoFileService/config"
 	"GoFileService/handler"
 	"GoFileService/router"
-	"fmt"
 	"github.com/gin-gonic/gin"
+	"log"
+	"strconv"
 )
 
 func main() {
@@ -14,9 +15,8 @@ func main() {
 	router.RegisterRouter(engine)                   // 注册首页
 	handler.RegisterUploadHandler(engine, myConfig) // 注册上传处理函数
 
-	err := engine.Run(":" + myConfig.Port)
+	err := engine.Run(":" + strconv.Itoa(myConfig.Port))
 	if err != nil {
-		fmt.Println(err)
-		return
+		log.Fatalln(err)
 	}
 }
