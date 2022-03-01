@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>list</title>
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.6.0.min.js"></script>
+    <script>
+        $(function () {
+            let fileType = getQueryVariable("fileType")
+            if (fileType !== "file") {
+                fileType = "image"
+            }
+            $.get("/filemanage/queryList", {"fileType": fileType},
+                function (result) {
+                    if (result.data !== null) {
+                        let htmlStr = ""
+                        if (fileType === "image") {
+                            $.each(result.data, function (i, n) {
+                                htmlStr += '<tr><td><img style="width: 600px" src="' + n + '"></td>'
+                                htmlStr += '<td>' + n + '</td></tr>'
+                            })
+                        } else {
+                            $.each(result.data, function (i, n) {
+                                htmlStr += '<tr><td><img src="https://s3.bmp.ovh/imgs/2022/03/2724b6e2bcb7a282.png"></td>'
+                                htmlStr += '<td>' + n + '</td></tr>'
+                            })
+                        }
+
+                        $("#thead").after(htmlStr)
+                    }
+                });
+        })
+
+        function getQueryVariable(variable) {
+            let query = window.location.search.substring(1);
+            let vars = query.split("&");
+            for (let i = 0; i < vars.length; i++) {
+                let pair = vars[i].split("=");
+                if (pair[0] == variable) {
+                    return pair[1];
+                }
+            }
+            return false;
+        }
+    </script>
+</head>
+<body>
+<table style="margin: 5em 0 0 5em">
+    <thead id="thead">
+    <tr>
+        <td style="height: 100px">图片</td>
+        <td>图片URL</td>
+    </tr>
+    </thead>
+</table>
+</body>
+</html>

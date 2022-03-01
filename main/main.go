@@ -10,13 +10,14 @@ import (
 )
 
 func main() {
-	myConfig := config.LoadConfig() // 加载配置文件
+	serverConfig := config.GetServerConfig()
 	engine := gin.Default()
-	router.RegisterRouter(engine)                   // 注册首页
-	handler.RegisterUploadHandler(engine, myConfig) // 注册上传处理函数
+	router.RegisterRouter(engine)       // 注册路由：首页
+	handler.RegisterFileHandler(engine) // 注册路由：文件处理器
 
-	err := engine.Run(":" + strconv.Itoa(myConfig.Port))
+	err := engine.Run(":" + strconv.Itoa(serverConfig.Port))
 	if err != nil {
 		log.Fatalln(err)
 	}
+
 }

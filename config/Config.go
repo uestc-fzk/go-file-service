@@ -1,37 +1,61 @@
 package config
 
 import (
+	"fmt"
 	"gopkg.in/ini.v1"
 	"log"
 )
 
-type Config struct {
-	Port          int      `ini:"port"`          // 端口号
-	DirRootPath   string   `ini:"dirRootPath"`   // 文件存放根目录
-	DirAccessPath string   `ini:"dirAccessPath"` // nginx配置的此根目录的访问路径
-	Suffix        []string `ini:"suffix"`        // 图片后缀
-	Width         int      `ini:"fixWidth"`      // 压缩后的宽度
+type ServerConfig struct {
+	Port int `ini:"port"`
+}
+type FileConfig struct {
+	FileDirPath       string `ini:"fileDirPath"`       // 文件存放根目录
+	FileAccessDirPath string `ini:"fileAccessDirPath"` // nginx配置的此根目录的访问路径
+}
+type ImageConfig struct {
+	Suffix             []string `ini:"suffix"`             // 图片格式
+	FixWidth           int      `ini:"fixWidth"`           // 压缩至此宽度px
+	ToCompressSize     int      `ini:"toCompressSize"`     // 图片达此限制将被压缩，单位byte
+	ImageDirPath       string   `ini:"imageDirPath"`       // 放图片的目录
+	ImageAccessDirPath string   `ini:"imageAccessDirPath"` // nginx配置的访问存放图片目录的访问路劲
 }
 
-func LoadConfig() *Config {
+var (
+	serverConfig *ServerConfig = new(ServerConfig)
+	fileConfig   *FileConfig   = new(FileConfig)
+	imageConfig  *ImageConfig  = new(ImageConfig)
+)
+
+func init() {
 	configFile, err := ini.Load("./config/my.ini")
 	if err != nil {
 		log.Fatalln(err)
 	}
-	config := &Config{}
-	err = configFile.Section("server").MapTo(config)
+	err = configFile.Section("server").MapTo(serverConfig)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	err = configFile.Section("file").MapTo(config)
+	err = configFile.Section("file").MapTo(fileConfig)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	err = configFile.Section("image").MapTo(config)
+	err = configFile.Section("image").MapTo(imageConfig)
 	if err != nil {
 		log.Fatalln(err)
 	}
+	fmt.Printf("读取my.ini配置文件，解析如下:\n"+
+		"ServerConfig: %+v\n"+
+		"FileConfig: %+v\n"+
+		"ImageConfig: %+v\n", *serverConfig, *fileConfig, *imageConfig)
+}
 
-	log.Printf("从my.ini中加载如下配置：%+v\n", *config)
-	return config
+func GetServerConfig() *ServerConfig {
+	return serverConfig
+}
+func GetFileConfig() *FileConfig {
+	return fileConfig
+}
+func GetImageConfig() *ImageConfig {
+	return imageConfig
 }
