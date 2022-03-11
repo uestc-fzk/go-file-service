@@ -26,7 +26,7 @@ func main() {
 	// 注册swagger
 	docs.SwaggerInfo.BasePath = "/filemanage"
 	handler.RegisterFileHandler(r) // 注册路由：文件处理器
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.GET("/filemanage/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	err := r.Run(":" + strconv.Itoa(serverConfig.Port))
 	if err != nil {
