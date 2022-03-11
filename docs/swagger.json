@@ -1,0 +1,113 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "文件管理服务API文档",
+        "title": "fzk API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:23456",
+    "basePath": "/filemanage 基础路劲",
+    "paths": {
+        "/queryList": {
+            "get": {
+                "description": "获取服务器上普通文件或图片的访问列表",
+                "tags": [
+                    "filemanage"
+                ],
+                "summary": "获取服务器上普通文件或图片的访问列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "文件类型：file or image",
+                        "name": "fileType",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/handler.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/upload": {
+            "post": {
+                "description": "上传普通文件或图片",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "filemanage"
+                ],
+                "summary": "上传文件",
+                "parameters": [
+                    {
+                        "description": "相对路径",
+                        "name": "relativePath",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "文件用途",
+                        "name": "type",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.Result"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "handler.Result": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "example": 200
+                },
+                "data": {},
+                "msg": {
+                    "type": "string",
+                    "example": "ok"
+                }
+            }
+        }
+    }
+}
