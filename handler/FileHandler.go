@@ -12,18 +12,30 @@ import (
 
 // Result 自定义结果返回
 type Result struct {
-	Code int         `json:"code"`
-	Msg  string      `json:"msg"`
+	Code int         `json:"code" example:"200"`
+	Msg  string      `json:"msg" example:"ok"`
 	Data interface{} `json:"data"`
 }
 
 func RegisterFileHandler(engine *gin.Engine) {
-	engine.POST("/filemanage/upload", uploadHandle)
-	engine.GET("/filemanage/queryList", queryListHandle)
-
+	group := engine.Group("/filemanage")
+	{
+		group.POST("/upload", UploadHandle)
+		group.GET("/queryList", QueryListHandle)
+	}
 }
 
-func uploadHandle(c *gin.Context) {
+// UploadHandle
+// @Summary      	上传文件
+// @Description  	上传普通文件或图片
+// @Tags			filemanage
+// @Accept       	multipart/form-data
+// @Produce      	application/json
+// @Param        	relativePath  body string true "相对路径"
+// @Param        	type  body string true "文件用途"
+// @Success      	200     {object}  handler.Result
+// @Router       	/upload [post]
+func UploadHandle(c *gin.Context) {
 	form, err := c.MultipartForm()
 	if err != nil {
 		handleErr(c, 400, err)
@@ -102,7 +114,14 @@ func uploadHandle(c *gin.Context) {
 	c.JSON(200, Result{200, "ok", accessPaths})
 }
 
-func queryListHandle(c *gin.Context) {
+// QueryListHandle
+// @Summary     获取服务器上普通文件或图片的访问列表
+// @Description  获取服务器上普通文件或图片的访问列表
+// @Tags	filemanage
+// @Param        fileType    query     string  true  "文件类型：file or image"
+// @Success      200  {object}   handler.Result{data=[]string}
+// @Router       /queryList [get]
+func QueryListHandle(c *gin.Context) {
 	// 1.获取参数
 	fileType := c.Query("fileType")
 	if fileType == "image" {
