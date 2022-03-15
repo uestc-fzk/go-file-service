@@ -219,8 +219,9 @@ func DeleteFileListHandler(c *gin.Context) {
 			msg += fmt.Sprintf("\t删除成功：%d个", count)
 			c.JSON(200, &Result{Code: 200, Msg: msg})
 		}
+	} else {
+		c.JSON(200, &Result{Code: 400, Msg: "fileUrls长度为0"})
 	}
-	c.JSON(200, nil)
 }
 
 // 处理异常，统一返回
