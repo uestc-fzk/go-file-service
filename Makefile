@@ -3,3 +3,5 @@ swag-init:
 go-mod:
 	go mod download
 	go mod tidy
+go-start:
+	go run ./cmd/main.go

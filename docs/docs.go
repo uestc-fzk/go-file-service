@@ -16,7 +16,35 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/queryList": {
+        "/deleteFileList": {
+            "post": {
+                "description": "服务器上普通文件或图片删除",
+                "tags": [
+                    "filemanage"
+                ],
+                "summary": "删除文件列表",
+                "parameters": [
+                    {
+                        "description": "文件的访问url1,文件的访问url2...",
+                        "name": "fileUrls",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/fileList": {
             "get": {
                 "description": "获取服务器上普通文件或图片的访问列表",
                 "tags": [

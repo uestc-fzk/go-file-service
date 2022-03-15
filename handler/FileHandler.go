@@ -2,6 +2,7 @@ package handler
 
 import (
 	"GoFileService/config"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"log"
@@ -21,7 +22,8 @@ func RegisterFileHandler(engine *gin.Engine) {
 	group := engine.Group("/filemanage")
 	{
 		group.POST("/upload", UploadHandle)
-		group.GET("/queryList", QueryListHandle)
+		group.GET("/fileList", QueryListHandle)
+		group.POST("/deleteFileList", DeleteFileListHandler)
 	}
 }
 
@@ -120,7 +122,7 @@ func UploadHandle(c *gin.Context) {
 // @Tags	filemanage
 // @Param        fileType    query     string  true  "文件类型：file or image"
 // @Success      200  {object}   handler.Result{data=[]string}
-// @Router       /queryList [get]
+// @Router       /fileList [get]
 func QueryListHandle(c *gin.Context) {
 	// 1.获取参数
 	fileType := c.Query("fileType")
@@ -173,6 +175,52 @@ func getAllFiles(dirPath string) ([]string, error) {
 		}
 	}
 	return files, nil
+}
+
+// DeleteFileListHandler
+// @Summary    删除文件列表
+// @Description  服务器上普通文件或图片删除
+// @Tags	filemanage
+// @Param        fileUrls    body     string  true  "文件的访问url1,文件的访问url2..."
+// @Success      200  {object}   handler.Result
+// @Router       /deleteFileList [post]
+func DeleteFileListHandler(c *gin.Context) {
+	fileUrlStr, b := c.GetPostForm("fileUrls")
+	if !b {
+		c.JSON(200, &Result{Code: 400, Msg: "fileUrls参数不存在"})
+		c.Abort()
+		return
+	}
+	if fileUrlStr != "" {
+		fileUrls := strings.Split(fileUrlStr, ",")
+		if len(fileUrls) > 0 {
+			var count = 0 //删除文件数量
+			var msg = ""
+			for _, fileUrl := range fileUrls {
+				// 将url转为文件路径
+				var filePath = ""
+				if strings.HasPrefix(fileUrl, config.GetFileConfig().FileAccessDirPath) {
+					filePath = config.GetFileConfig().FileDirPath + "/" +
+						strings.TrimPrefix(fileUrl, config.GetFileConfig().FileAccessDirPath)
+				} else if strings.HasPrefix(fileUrl, config.GetImageConfig().ImageAccessDirPath) {
+					filePath = config.GetImageConfig().ImageDirPath + "/" +
+						strings.TrimPrefix(fileUrl, config.GetImageConfig().ImageAccessDirPath)
+				}
+				if _, err := os.Stat(filePath); os.IsNotExist(err) {
+					msg += fmt.Sprintf("\t%s对应的filepath：%s不存在", fileUrl, filePath)
+					continue
+				}
+				if os.Remove(filePath) != nil {
+					msg += fmt.Sprintf("\t%s对应的filepath：%s删除失败", fileUrl, filePath)
+					continue
+				}
+				count++
+			}
+			msg += fmt.Sprintf("\t删除成功：%d个", count)
+			c.JSON(200, &Result{Code: 200, Msg: msg})
+		}
+	}
+	c.JSON(200, nil)
 }
 
 // 处理异常，统一返回

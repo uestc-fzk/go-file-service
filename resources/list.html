@@ -10,13 +10,14 @@
             if (fileType !== "file") {
                 fileType = "image"
             }
-            $.get("/filemanage/queryList", {"fileType": fileType},
+            $.get("/filemanage/fileList", {"fileType": fileType},
                 function (result) {
                     if (result.data !== null) {
                         let htmlStr = ""
                         if (fileType === "image") {
                             $.each(result.data, function (i, n) {
-                                htmlStr += '<tr><td><img style="width: 600px" src="' + n + '"></td>'
+                                htmlStr += '<tr><td><input type="checkbox" name="fileUrl" value="' + n + '"></td>'
+                                htmlStr += '<td><img style="width: 5em" src="' + n + '"></td>'
                                 htmlStr += '<td>' + n + '</td></tr>'
                             })
                         } else {
@@ -29,6 +30,32 @@
                         $("#thead").after(htmlStr)
                     }
                 });
+            $("#deleteBtn").click(function () {
+                let $checked = $("input[type='checkbox']:checked")
+                if ($checked.length === 0) {
+                    alert("nothing to delete")
+                    return false
+                }
+                let dataStr = ""
+                $.each($checked, function (i, n) {
+                    if (i === 0) {
+                        dataStr = n.value
+                    } else {
+                        dataStr = dataStr + "," + n.value
+                    }
+                })
+                alert("即将发给后端的fileUrls为：" + dataStr)
+                $.ajax({
+                    url: "/filemanage/deleteFileList",
+                    method: "post",
+                    dataType: "json",
+                    data: {fileUrls: dataStr},
+                    success: function (result) {
+                        alert(result.msg)
+                    }
+                })
+            })
+
         })
 
         function getQueryVariable(variable) {
@@ -48,10 +75,12 @@
 <table style="margin: 5em 0 0 5em">
     <thead id="thead">
     <tr>
-        <td style="height: 100px">图片</td>
-        <td>图片URL</td>
+        <td></td>
+        <td style="height: 5em">文件</td>
+        <td>文件URL</td>
     </tr>
     </thead>
 </table>
+<button type="button" id="deleteBtn" style="margin:1em 40% 1em 40%">一键删除</button>
 </body>
 </html>
