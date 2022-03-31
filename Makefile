@@ -1,7 +1,7 @@
 # 变量
 DOCKER_USERNAME=uestcfzk
 IMAGE_NAME=fileservice
-VERSION=v1
+VERSION=v2
 
 swag-init: # swag文档重新生成
 	swag init -g ./cmd/main.go -o ./docs
@@ -22,4 +22,3 @@ docker-build-image:
 	docker build -t $(DOCKER_USERNAME)/$(IMAGE_NAME):$(VERSION) .
 
 docker-run: # 这里挂载一个数据卷rm
-	docker run -d -p 23456:23456 -v /opt/resources:/opt/resources  $(DOCKER_USERNAME)/$(IMAGE_NAME):$(VERSION)

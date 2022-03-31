@@ -1,4 +1,4 @@
-FROM golang:1.16.14
+FROM golang:1.17.8
 # 此COPY命令将当前目录的所有文件复制到指定目录下
 COPY . /opt/GoFileService
 WORKDIR /opt/GoFileService
